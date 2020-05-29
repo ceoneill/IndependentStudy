@@ -1,0 +1,287 @@
+---
+title: "Cleaning/Exploring Data"
+output: html_document
+---
+
+## looking into site info
+
+```{r}
+site_info <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\site_info\\site_info_01621050.csv")
+View(site_info)
+```
+
+
+### NCEI
+
+```{r}
+ncei_data <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Data_Collection_5_22\\2163751.csv")
+View(ncei_data)
+
+# long/lat are only 1.1 km accurate
+
+```
+
+### USGS Land Cover
+
+```{r}
+land_cover <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Data_Collection_5_22\\gaplf2011lc_v30_VA\\gaplf2011lc_v30_state_summary.csv")
+View(land_cover)
+
+# Not very useful.. need bounding boxes
+# trying the tif file
+
+library(raster)
+str_name<-"C:\\Users\\coneill\\Documents\\IndependentStudy\\Data_Collection_5_22\\gaplf2011lc_v30_VA\\gaplf2011lc_v30_va.tif"
+imported_raster=raster(str_name)
+library(rgdal)
+plot(imported_raster)
+```
+
+
+
+### USGS gage height
+
+```{r}
+gage_height <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\gage_height\\sitedata_01613900.csv")
+View(gage_height)
+```
+
+### USGS Precipitation 
+
+```{r}
+precip <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\precip\\site_precip_01652500.csv")
+View(precip)
+```
+
+
+
+### USGS water temp
+
+```{r}
+water <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\water_temp\\watertemp_01622464.csv")
+View(water)
+
+```
+
+
+### USGS Discharge
+
+```{r}
+discharge <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\discharge\\site_discharge_01613900.csv")
+View(discharge)
+```
+
+
+### DEM 
+
+```{r}
+library(raster)
+library(rgdal)
+library(sp)
+library(sf)
+DEM <- raster("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\Data\\DEM\\orig_dem_Clip1.tif")
+VA <- st_read("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\Data\\VA_shape\\GOVTUNIT_Virginia_State_Shape\\Shape\\GU_StateOrTerritory.shp")
+```
+
+```{r}
+
+# View(VA)
+VA <- VA[-c(1:5), ]
+VA
+plot(VA$geometry)
+```
+
+
+#### Addressing projection to clip DEM
+
+```{r}
+crs(VA)
+# "+proj=longlat +datum=NAD83 +no_defs"
+crs(DEM)
+# +proj=aea +lat_1=29.5 +lat_2=45.5
+# +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0
+# +datum=NAD83 +units=m +no_defs
+# +ellps=GRS80 +towgs84=0,0,0
+
+va_proj <- st_transform(VA, proj4string(DEM))
+crs(va_proj)
+```
+
+```{r}
+plot(DEM)
+plot(va_proj$geometry, add = TRUE)
+```
+
+
+```{r}
+# crop the lidar raster using the vector extent
+dem_crop <- crop(DEM, va_proj)
+plot(dem_crop, main = "Cropped DEM")
+
+# add shapefile on top of the existing raster
+plot(va_proj$geometry, add = TRUE)
+
+```
+
+
+### Clipping Rainfall raster to VA shape
+
+```{r}
+precip_5yr <- raster("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\Data\\precip_rasters\\orb5yr24ha_ams\\orb5yr24ha_ams.asc")
+class(precip_5yr)
+crs(precip_5yr)
+```
+
+```{r}
+# changing the crs to match the dem, shp 
+precip_5yr_proj <- projectRaster(precip_5yr,crs=crs(va_proj))
+crs(precip_5yr_proj)
+
+```
+
+```{r}
+# Croppping precip data
+precip_5yr_proj_crop <- crop(precip_5yr_proj, va_proj)
+plot(precip_5yr_proj_crop, main = "Cropped Precipitation")
+
+# add shapefile on top of the existing raster
+plot(va_proj$geometry, add = TRUE)
+```
+
+
+
+### Clipping remaining rainfall data
+
+```{r}
+precip_10yr <- raster("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\Data\\precip_rasters\\orb10yr24ha_ams\\orb10yr24ha_ams.asc")
+class(precip_10yr)
+crs(precip_10yr)
+
+# changing the crs to match the dem, shp 
+precip_10yr_proj <- projectRaster(precip_10yr,crs=crs(va_proj))
+crs(precip_10yr_proj)
+```
+
+
+```{r}
+# Croppping precip data
+precip_10yr_proj_crop <- crop(precip_10yr_proj, va_proj)
+
+plot(precip_10yr_proj_crop, main = "Cropped Precipitation")
+
+# add shapefile on top of the existing raster
+plot(va_proj$geometry, add = TRUE)
+```
+
+
+```{r}
+precip_25yr <- raster("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\Data\\precip_rasters\\orb25yr24ha_ams\\orb25yr24ha_ams.asc")
+class(precip_25yr)
+crs(precip_25yr)
+
+# changing the crs to match the dem, shp 
+precip_25yr_proj <- projectRaster(precip_25yr,crs=crs(va_proj))
+crs(precip_25yr_proj)
+```
+
+
+```{r}
+# Croppping precip data
+precip_25yr_proj_crop <- crop(precip_25yr_proj, va_proj)
+
+plot(precip_25yr_proj_crop, main = "Cropped Precipitation")
+
+# add shapefile on top of the existing raster
+plot(va_proj$geometry, add = TRUE)
+```
+
+
+### Calculating Slope and Aspect from DEM
+
+
+```{r}
+slope <- terrain(dem_crop, opt="slope", unit="degrees", neighbors=8, filename="slope")
+plot(slope)
+```
+
+
+```{r}
+aspect <- terrain(dem_crop, opt="aspect", unit="degrees", neighbors=8, filename="aspect", overwrite = TRUE)
+plot(aspect)
+```
+
+
+### Hydro 
+
+```{r}
+hydro_flowlines <- st_read("C:\\Users\\coneill\\Downloads\\NHD_H_Virginia_State_Shape\\Shape\\NHDFlowline.shp")
+hydro_nhd_area <- st_read("C:\\Users\\coneill\\Downloads\\NHD_H_Virginia_State_Shape\\Shape\\NHDArea.shp")
+hydro_flowlines <- st_zm(hydro_flowlines)
+plot(hydro_flowlines$geometry)
+```
+
+
+```{r}
+# We have to filter out some of the hydro data because there is way too much detail on the map 
+
+cut_out <- which(hydro_flowlines$Shape_Leng < 0.0001)
+hydro_flowlines <- hydro_flowlines[-c(cut_out), ]
+plot(hydro_flowlines$geometry)
+```
+
+
+### Land Cover
+
+```{r}
+# land_cover <- raster("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\Data\\land_cover\\NLCD_2016_Land_Cover_L48_.tif")
+# 
+# crs(land_cover)
+# land_cover <- projectRaster(land_cover, crs= "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
+
+```
+
+
+
+```{r}
+# # crop the land use raster using the vector extent
+# land_cover_crop <- crop(land_cover, va_proj)
+# plot(land_cover_crop, main = "Cropped Land Use")
+# 
+# # add shapefile on top of the existing raster
+# plot(va_proj$geometry, add = TRUE)
+
+```
+
+
+### NDVI
+
+```{r}
+NDVI <- raster("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\Data\\NDVI\\US_eMAH_NDVI.2020.133-139.QKM.COMPRES.006.2020141150413\\US_eMAH_NDVI.2020.133-139.QKM.VI_ACQI.006.2020141145034.tif")
+crs(NDVI)
+
+NDVI_proj <- projectRaster(NDVI,crs= "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs +ellps=GRS80 +towgs84=0,0,0")
+```
+
+
+```{r}
+# # crop the NDVI raster using the vector extent
+# NDVI_proj_crop <- crop(NDVI_proj, va_proj)
+# plot(NDVI_proj_crop, main = "Cropped NDVI")
+# 
+# # add shapefile on top of the existing raster
+# plot(va_proj$geometry, add = TRUE)
+
+```
+
+### Soil Type
+
+### Lithology 
+
+
+
+
+
+
+
+
+
