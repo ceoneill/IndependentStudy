@@ -1,0 +1,306 @@
+---
+title: "data_gather_dataret"
+output: html_document
+---
+
+```{r}
+#install.packages("dataRetrieval")
+library(dataRetrieval)
+library("data.table")
+```
+
+
+
+
+```{r}
+siteNumbers <- c(
+"01613900","01615000","01616100","01620500","01621050","01622000","01622464", "01625000","01626000", "01626850","01627500","01628500","01629500","01631000","01632000","01632082",
+"01632900","01633000","01634000","01634500","01635500","01636316","01636690","01638350","01638420",
+"01638480","01643590","01643700","01643805", "01643880","01644000","01644280","01645704","01645762",
+"01646000","01646305","01652500","01653000",
+"01654000", "01654500","01655794","01656000",
+"01656903","01658500","01660400","01661977",
+"01662800","01663500","01664000", "01665500",
+"01666500","01667500","01668000","01669000",
+"01669520","01670400","01671020","01671025",
+"01671100", "01672500","01673000","01673550",
+"01673800","01674000","01674182","01674500",
+"02011400","02011460","02011470", "02011490",
+"02011500","02011800","02013000","02013100",
+"02014000","02015700","02015729","02016000",
+"02016500", "02017500","02018000","02018500",
+"02019500","02020246","02020500","02021500",
+"02022500","02024000", "02024750","02024752",
+"02024915","02025500","02025652","02026000",
+"02027000",
+"02027500",
+"02028500",
+"02029000",
+"02030000","02030500","02031000","02032250",
+"02032515","02032640","02034000","02035000",
+"02036500","02037000",
+"02037500","02038850","02039000","02039500",
+"02040000","02040892","02041000","02041650",
+"02042500","02044500",
+"02045320","02045500","02046000","02047000",
+"02047370","02047500","02047783","02049500",
+"02050000","02051000",
+"02051190","02051500","02052000","02052090",
+"02053800","02054500","02054530","02054750",
+"02055000","02055080",
+"02055100","02055379","02056000","02056650",
+"02056900","02058400","02059500","02060500",
+"02061500","02062500",
+"02064000","02065500","02066000","02069700",
+"02070000","02071530","02072000","02072500",
+"02073000","02074500",
+"02075045","02075500","02076000","02077000",
+"02079500","02079640","03164000","03165000",
+"03165500","03167000",
+"03168000","03170000","03171000","03173000",
+"03175500","03176500","03177710","03207800",
+"03208500","03208950",
+"03209000","03209200","03471500","03473000",
+"03474000","03475000","03478400","03488000",
+"03490000","03524000",
+"03524500","03527000","03529500","03531500",
+"0162246784","0162588350","0167300055",
+"0167357970","0201144806","0202848938",
+"0204309906","0205373075","0205373422","0205551460",
+"0205551614","0205696095","0317154954","0317159760",
+"363342076261100","364145076245400",
+"364259076262300",
+"36431207611800",
+"364314076211900",
+"364336076231300",
+"364336076231400",
+"364355076245000",
+"371631079542600")
+```
+
+
+
+
+
+
+```{r}
+# Gage height
+
+for (i in siteNumber_1) {
+ gh_1 <- readNWISuv(i, "00065", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+
+  fwrite(gh_1, file = paste0("sitedata_", i, ".csv"))
+
+}
+```
+
+
+```{r}
+# Gage height 
+
+for (i in siteNumber_3) {
+  gh_3 <- readNWISuv(i, "00065", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_3, file = paste0("sitedata_", i, ".csv"))
+}
+
+```
+
+
+```{r}
+# Precip
+
+for (i in siteNumbers) {
+  gh_3 <- readNWISuv(i, "00045", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_3, file = paste0("site_precip_", i, ".csv"))
+  
+}
+```
+
+
+```{r}
+# Discharge 
+
+for (i in siteNumbers) {
+  gh_5 <- readNWISuv(i, "00060", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_5, file = paste0("site_discharge_", i , ".csv"))
+}
+
+```
+
+
+
+```{r}
+# Minimum
+
+for (i in siteNumbers) {
+  gh_7 <- readNWISuv(i, "00002", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_7, file = paste0("site_min_", i , ".csv"))
+}
+
+```
+
+
+
+```{r}
+# Maximum
+
+for (i in siteNumbers) {
+  gh_9 <- readNWISuv(i, "00001", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_9, file = paste0("site_max_", i, ".csv"))
+}
+
+```
+
+
+
+```{r}
+# Median
+
+for (i in siteNumbers) {
+  gh_11 <- readNWISuv(i, "00008", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_11, file = paste0("site_median_", i, ".csv"))
+}
+
+```
+
+
+
+```{r}
+# Site info- has lat/long/alt
+for (i in siteNumbers) {
+  siteINFO_1 <- readNWISsite(siteNumbers)
+  
+  fwrite(siteINFO_1, file = paste0("site_info_", i, ".csv"))
+}
+
+```
+
+
+```{r}
+# Elevation
+
+for (i in siteNumbers) {
+  gh_13 <- readNWISuv(i, "72333", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_13, file = paste0("elevation_", i, ".csv"))
+}
+
+```
+
+```{r}
+# slope 
+
+for (i in siteNumbers) {
+  gh_14 <- readNWISuv(i, "72332", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_14, file = paste0("slope_", i, ".csv"))
+}
+
+```
+
+```{r}
+# land use within 1/4 mi radius 
+
+for (i in siteNumbers) {
+  gh_15 <- readNWISuv(i, "84149", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_15, file = paste0("landuse_", i, ".csv"))
+}
+
+```
+
+
+```{r}
+# Water Temp C 
+
+for (i in siteNumbers) {
+  gh_16 <- readNWISuv(i, "00010", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_16, file = paste0("watertemp_", i, ".csv"))
+}
+
+```
+
+
+```{r}
+# Air temp 
+
+for (i in siteNumbers) {
+  gh_17 <- readNWISuv(i, "72283", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_17, file = paste0("airtemp_", i, ".csv"))
+}
+
+```
+
+
+```{r}
+# Relative Humidity
+
+for (i in siteNumbers) {
+  gh_18 <- readNWISuv(i, "00052", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_18, file = paste0("relative_humidity_", i, ".csv"))
+}
+
+```
+
+```{r}
+# Wind Speed 
+
+for (i in siteNumbers) {
+  gh_19 <- readNWISuv(i, "62625", startDate = "2018-01-01", endDate = "", tz = "America/New_York")
+  
+  fwrite(gh_19, file = paste0("wind_speed_", i, ".csv"))
+}
+
+```
+
+
+## other sources
+
+### NCEI
+
+```{r}
+ncei_data <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Data_Collection_5_22\\2163751.csv")
+```
+
+### USGS Land Cover
+
+```{r}
+land_cover <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Data_Collection_5_22\\gaplf2011lc_v30_VA\\gaplf2011lc_v30_state_summary.csv")
+
+# Not very useful.. need bounding boxes
+# trying the tif file
+
+library(raster)
+str_name<-"C:\\Users\\coneill\\Documents\\IndependentStudy\\Data_Collection_5_22\\gaplf2011lc_v30_VA\\gaplf2011lc_v30_va.tif"
+imported_raster=raster(str_name)
+library(rgdal)
+plot(imported_raster)
+```
+
+
+### looking into site info
+
+```{r}
+site_info <- read.csv("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\site_info\\site_info_01621050.csv")
+View(site_info)
+```
+
+
+### Loading the DEM 
+
+```{r}
+library(raster)
+library(sp)
+library(rgdal)
+DEM <- raster("C:\\Users\\coneill\\Documents\\IndependentStudy\\Independent_Study_Data_gather\\Data\\DEM\\us_orig_dem\\orig_dem.rrd")
+```
+
